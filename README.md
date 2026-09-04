@@ -13,6 +13,8 @@ unet_mars_o2_plume/
   inference.py       Checkpoint loading and tiled inference
 examples/
   run_example.py     Executable synthetic or NPZ example
+  plot_20180120_full_day.py
+                     Full-day MAVEN STATIC example and four-panel figure
 weights/
   unet_v9_best_selection.pt
 MODEL_CARD.md         Architecture, performance, and limitations
@@ -41,6 +43,36 @@ python examples/run_example.py --device cpu
 ```
 
 This command verifies that the checkpoint loads, performs overlap-averaged inference, and writes `prediction.npz`.
+
+## Full-day MAVEN example: 20 January 2018
+
+The example script accepts aligned MAVEN STATIC H+, O+, and O2+ DEF arrays from
+00:00 to 24:00 UTC on 20 January 2018. Reproduce the four-panel example with:
+
+```bash
+python examples/plot_20180120_full_day.py --data static_20180120.npz
+```
+
+The NPZ file must contain `time`, `energy_ev`, `h_def`, `o_def`, `o2_def`, and
+`labels`. The two-dimensional spectra and label map must have shape
+`[time, energy]`. An optional region CSV may be supplied with `--regions`; its
+columns are `region`, `start_utc`, and `end_utc`.
+
+The default command plots the saved production v9 labels. To rebuild the nine
+physical input channels and rerun the released checkpoint before plotting, use:
+
+```bash
+python examples/plot_20180120_full_day.py \
+    --data static_20180120.npz \
+    --rerun-inference
+```
+
+The production label map includes the confidence, physical-support, and
+connected-component screening used in the catalog workflow. The direct
+checkpoint option displays the raw four-class inference after masking invalid
+O2+ pixels, so small differences from the production label panel are expected.
+
+![MAVEN STATIC U-Net v9 full-day example](docs/static_unet_v9_20180120_abcd.png)
 
 ## Run on aligned STATIC spectra
 
