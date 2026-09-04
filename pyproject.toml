@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unet-mars-o2-plume"
+version = "9.0.0"
+description = "Inference code for MAVEN STATIC O2+ plume segmentation with U-Net v9"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "torch>=2.1"
+]
+
+[tool.setuptools.packages.find]
+include = ["unet_mars_o2_plume*"]

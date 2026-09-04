@@ -1,0 +1,41 @@
+{
+  "version": "v9_512_overlap90_split80_20_h_o_o2",
+  "checkpoint": "unet_v9_best_selection.pt",
+  "selection_name": "maximum test selection score",
+  "selected_epoch": 3,
+  "parameter_count": 273124,
+  "base_channels": 12,
+  "window_size": 512,
+  "stride": 51,
+  "requested_overlap_fraction": 0.9,
+  "actual_overlap_fraction": 0.900390625,
+  "input_channels": [
+    "o2_log_def",
+    "h_log_def",
+    "o_log_def",
+    "h_to_o2_log_ratio",
+    "o_to_o2_log_ratio",
+    "o2_validity",
+    "h_validity",
+    "o_validity",
+    "log_energy"
+  ],
+  "class_names": [
+    "H+ contamination",
+    "plume",
+    "cold ions",
+    "other/uncertain"
+  ],
+  "event_split": {
+    "seed": 42,
+    "total_events": 234,
+    "training_events": 187,
+    "test_events": 47
+  },
+  "selected_epoch_test_metrics": {
+    "loss": 0.1755395365997832,
+    "macro_f1": 0.9789330720230893,
+    "macro_iou": 0.960914684375739,
+    "pixel_accuracy": 0.970576571140589
+  }
+}
