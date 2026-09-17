@@ -11,12 +11,12 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from unet_mars_o2_plume import (
+from unet_mars_o2_beams import (
     build_input_channels,
     load_pretrained_model,
     predict_spectrogram,
 )
-from unet_mars_o2_plume.inference import CLASS_NAMES
+from unet_mars_o2_beams.inference import CLASS_NAMES
 
 
 DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v9_best_selection.pt"

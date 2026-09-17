@@ -25,7 +25,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from unet_mars_o2_plume import (  # noqa: E402
+from unet_mars_o2_beams import (  # noqa: E402
     build_input_channels,
     load_pretrained_model,
     predict_spectrogram,
@@ -37,7 +37,7 @@ DEFAULT_OUTPUT = ROOT / "docs" / "static_unet_v9_20180120_abcd.png"
 
 # Production labels use zero for noise or rejected pixels, followed by the
 # three accepted physical classes. These colors match the manuscript figure.
-LABEL_NAMES = ("Noise", "H+ contamination", "Plume", "Low-energy ions")
+LABEL_NAMES = ("Noise", "H+ contamination", "Beam", "Low-energy ions")
 LABEL_COLORS = ("#D9D9D9", "#D95F02", "#7B2CBF", "#1B9E77")
 REGION_NAMES = {
     "SW": "Solar Wind",
@@ -79,7 +79,7 @@ def infer_labels(
     model, _, selected_device = load_pretrained_model(checkpoint, device)
     _, raw_labels = predict_spectrogram(model, inputs, selected_device)
 
-    # Checkpoint order: H+ contamination, plume, low-energy ions,
+    # Checkpoint order: H+ contamination, Beam, low-energy ions,
     # other/uncertain. Production display order reserves zero for noise.
     class_to_display = np.asarray([1, 2, 3, 0], dtype=np.uint8)
     labels = class_to_display[raw_labels]

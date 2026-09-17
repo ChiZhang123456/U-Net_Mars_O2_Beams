@@ -11,7 +11,7 @@ from .model import StaticUNet
 from .preprocessing import INPUT_CHANNEL_NAMES
 
 
-CLASS_NAMES = ("H+ contamination", "plume", "cold ions", "other/uncertain")
+CLASS_NAMES = ("H+ contamination", "Beam", "cold ions", "other/uncertain")
 DEFAULT_WINDOW_SIZE = 512
 DEFAULT_STRIDE = 51
 

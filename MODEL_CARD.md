@@ -2,7 +2,7 @@
 
 ## Intended use
 
-This model performs pixel-wise semantic segmentation of aligned MAVEN STATIC H+, O+, and O2+ differential energy flux spectrograms. Its primary scientific purpose is to identify O2+ plume pixels for statistical studies of the solar wind interaction with Mars.
+This model performs pixel-wise semantic segmentation of aligned MAVEN STATIC H+, O+, and O2+ differential energy flux spectrograms. Its primary scientific purpose is to identify O2+ Energetic beam pixels for statistical studies of the solar wind interaction with Mars.
 
 The model is a research product. Predictions should be visually inspected and interpreted together with instrument coverage, background contamination, spacecraft location, magnetic-field measurements, and the physical context of each interval.
 
@@ -29,7 +29,7 @@ DEF values are clipped in log10 space from 4 to 8 and mapped to [0, 1]. Logarith
 The output class order stored in the checkpoint is:
 
 0. H+ contamination
-1. O2+ plume
+1. O2+ Energetic beam
 2. Cold ions
 3. Other or uncertain
 

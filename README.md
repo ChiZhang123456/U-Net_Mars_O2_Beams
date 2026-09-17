@@ -1,13 +1,13 @@
-# U-Net Mars O2 Plume
+# U-Net Mars O2 Energetic beams
 
-PyTorch code and trained parameters for **U-Net v9**, a semantic-segmentation model developed to identify O2+ plume signatures in MAVEN STATIC energy-time spectrograms.
+PyTorch code and trained parameters for **U-Net v9**, a semantic-segmentation model developed to identify O2+ Energetic beam signatures in MAVEN STATIC energy-time spectrograms.
 
 ![U-Net v9 architecture](docs/unet_v9_architecture.png)
 
 ## Repository contents
 
 ```text
-unet_mars_o2_plume/
+unet_mars_o2_beams/
   model.py           U-Net architecture
   preprocessing.py   Nine-channel physical preprocessing
   inference.py       Checkpoint loading and tiled inference
@@ -26,8 +26,8 @@ requirements.txt
 Clone the repository and install the two runtime dependencies:
 
 ```bash
-git clone https://github.com/ChiZhang123456/U-Net_Mars_O2_Plume.git
-cd U-Net_Mars_O2_Plume
+git clone https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams.git
+cd U-Net_Mars_O2_Beams
 python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
@@ -100,12 +100,12 @@ The output contains:
 | `class_names` | `[4]` | Class names in checkpoint order |
 | `energy_ev` | `[energy]` | Input energy-bin centers |
 
-Class index 1 is the O2+ plume class.
+Class index 1 is the O2+ Energetic beam class.
 
 ## Python API
 
 ```python
-from unet_mars_o2_plume import (
+from unet_mars_o2_beams import (
     build_input_channels,
     load_pretrained_model,
     predict_spectrogram,
@@ -116,7 +116,7 @@ model, metadata, device = load_pretrained_model(
     "weights/unet_v9_best_selection.pt"
 )
 probabilities, labels = predict_spectrogram(model, inputs, device)
-plume_mask = labels == 1
+beam_mask = labels == 1
 ```
 
 ## Model configuration
