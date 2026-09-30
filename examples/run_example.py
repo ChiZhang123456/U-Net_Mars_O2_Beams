@@ -1,4 +1,4 @@
-"""Run U-Net v9 on an NPZ file or on a deterministic synthetic example."""
+"""Run U-Net v10 on an NPZ file or on a deterministic synthetic example."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 import numpy as np
+import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -19,7 +20,7 @@ from unet_mars_o2_beams import (
 from unet_mars_o2_beams.inference import CLASS_NAMES
 
 
-DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v9_best_selection.pt"
+DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v10_best_validation.pt"
 
 
 def synthetic_spectra() -> dict[str, np.ndarray]:
@@ -29,7 +30,6 @@ def synthetic_spectra() -> dict[str, np.ndarray]:
     energy_ev = np.geomspace(0.2, 3.0e4, energy_bins)
     shape = (time_samples, energy_bins)
     return {
-        "h_def": 10.0 ** rng.uniform(4.0, 7.0, shape),
         "o_def": 10.0 ** rng.uniform(4.0, 7.0, shape),
         "o2_def": 10.0 ** rng.uniform(4.0, 7.0, shape),
         "energy_ev": energy_ev,
@@ -40,7 +40,7 @@ def load_spectra(path: Path | None) -> dict[str, np.ndarray]:
     if path is None:
         return synthetic_spectra()
     with np.load(path, allow_pickle=False) as source:
-        required = ("h_def", "o_def", "o2_def", "energy_ev")
+        required = ("o_def", "o2_def", "energy_ev")
         missing = [name for name in required if name not in source]
         if missing:
             raise KeyError(f"Input NPZ is missing: {missing}")
@@ -55,6 +55,7 @@ def main() -> None:
     parser.add_argument("--device", help="For example, cpu, cuda, or cuda:0")
     args = parser.parse_args()
 
+    torch.set_num_threads(4)
     spectra = load_spectra(args.input)
     inputs = build_input_channels(**spectra)
     model, checkpoint, device = load_pretrained_model(args.checkpoint, args.device)

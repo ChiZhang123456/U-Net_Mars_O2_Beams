@@ -1,41 +1,23 @@
 {
-  "version": "v9_512_overlap90_split80_20_h_o_o2",
-  "checkpoint": "unet_v9_best_selection.pt",
-  "selection_name": "maximum test selection score",
-  "selected_epoch": 3,
-  "parameter_count": 273124,
-  "base_channels": 12,
-  "window_size": 512,
-  "stride": 51,
-  "requested_overlap_fraction": 0.9,
-  "actual_overlap_fraction": 0.900390625,
-  "input_channels": [
+  "version": "v10",
+  "input_channel_names": [
     "o2_log_def",
-    "h_log_def",
     "o_log_def",
-    "h_to_o2_log_ratio",
     "o_to_o2_log_ratio",
     "o2_validity",
-    "h_validity",
     "o_validity",
     "log_energy"
   ],
   "class_names": [
-    "H+ contamination",
+    "Noise",
     "Beam",
-    "cold ions",
-    "other/uncertain"
+    "Low-energy ions"
   ],
-  "event_split": {
-    "seed": 42,
-    "total_events": 234,
-    "training_events": 187,
-    "test_events": 47
-  },
-  "selected_epoch_test_metrics": {
-    "loss": 0.1755395365997832,
-    "macro_f1": 0.9789330720230893,
-    "macro_iou": 0.960914684375739,
-    "pixel_accuracy": 0.970576571140589
-  }
+  "patch_time_samples": 512,
+  "patch_stride": 256,
+  "selected_epoch": 3,
+  "parameter_count": 272787,
+  "background_correction": "STATIC C6 correct_bkg_c6 using iv4, once before species extraction",
+  "source_checkpoint_sha256": "e960a14c70d1bdf921e9fede8966d57a5e9491a6d35da7c05499b33f9460896c",
+  "checkpoint_sha256": "d320b7a51b4b8af6eb9a970609ce239908eb13a530b98a48a335ee901051f72a"
 }

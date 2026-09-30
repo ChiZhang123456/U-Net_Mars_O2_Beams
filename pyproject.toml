@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unet-mars-o2-beams"
-version = "9.0.0"
-description = "Inference code for MAVEN STATIC O2+ Energetic beam segmentation with U-Net v9"
+version = "10.0.0"
+description = "Inference code for MAVEN STATIC O2+ Energetic beam segmentation with U-Net v10"
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.24",

@@ -1,4 +1,4 @@
-"""Checkpoint loading and overlap-averaged inference for U-Net v9."""
+"""Checkpoint loading and overlap-averaged inference for U-Net v10."""
 
 from __future__ import annotations
 
@@ -11,27 +11,29 @@ from .model import StaticUNet
 from .preprocessing import INPUT_CHANNEL_NAMES
 
 
-CLASS_NAMES = ("H+ contamination", "Beam", "cold ions", "other/uncertain")
+CLASS_NAMES = ("Noise", "Beam", "Low-energy ions")
 DEFAULT_WINDOW_SIZE = 512
-DEFAULT_STRIDE = 51
+DEFAULT_STRIDE = 256
 
 
 def load_pretrained_model(
     checkpoint_path: str | Path,
     device: str | torch.device | None = None,
 ) -> tuple[StaticUNet, dict, torch.device]:
-    """Load the released v9 checkpoint and verify its public metadata."""
+    """Load the released v10 checkpoint and verify its public metadata."""
     selected_device = torch.device(
         device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
     )
     checkpoint = torch.load(
-        Path(checkpoint_path), map_location=selected_device, weights_only=False
+        Path(checkpoint_path), map_location=selected_device, weights_only=True
     )
     stored_channels = tuple(checkpoint.get("input_channel_names", ()))
     if stored_channels != INPUT_CHANNEL_NAMES:
         raise ValueError(
-            "Checkpoint input channels do not match the released v9 preprocessing"
+            "Checkpoint input channels do not match the released v10 preprocessing"
         )
+    if checkpoint.get("version") != "v10" or tuple(checkpoint.get("class_names", ())) != CLASS_NAMES:
+        raise ValueError("Expected v10 checkpoint with Noise, Beam, Low-energy ions outputs")
     model = StaticUNet(in_channels=len(stored_channels), classes=len(CLASS_NAMES))
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(selected_device).eval()
@@ -61,22 +63,26 @@ def predict_spectrogram(
     Parameters
     ----------
     inputs
-        Normalized array with shape ``[9, time, energy]``.
+        Normalized array with shape ``[6, time, energy]``.
 
     Returns
     -------
     probabilities
-        Array with shape ``[4, time, energy]``.
+        Array with shape ``[3, time, energy]``.
     labels
-        Integer class map with shape ``[time, energy]``. Values 0 to 3 follow
+        Integer class map with shape ``[time, energy]``. Values 0 to 2 follow
         ``CLASS_NAMES``.
     """
     values = np.asarray(inputs, dtype=np.float32)
     if values.ndim != 3 or values.shape[0] != len(INPUT_CHANNEL_NAMES):
-        raise ValueError(f"Expected [9, time, energy], got {values.shape}")
+        raise ValueError(f"Expected [6, time, energy], got {values.shape}")
     if window_size <= 0 or stride <= 0 or stride > window_size:
         raise ValueError("Require 0 < stride <= window_size")
 
+    if values.shape[2] != 32 or window_size % 8:
+        raise ValueError("Require 32 energy bins and a window size divisible by eight")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("Normalized inputs must be finite")
     original_length = values.shape[1]
     if original_length == 0:
         raise ValueError("The time axis is empty")

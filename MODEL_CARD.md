@@ -1,57 +1,52 @@
-# Model card: MAVEN STATIC O2+ U-Net v9
+# Model card: MAVEN STATIC O2+ U-Net v10
 
 ## Intended use
 
-This model performs pixel-wise semantic segmentation of aligned MAVEN STATIC H+, O+, and O2+ differential energy flux spectrograms. Its primary scientific purpose is to identify O2+ Energetic beam pixels for statistical studies of the solar wind interaction with Mars.
+Pixel-wise segmentation of background-corrected STATIC O+ and O2+ DEF into Noise, Beam, and Low-energy ions. This is a research model; inspect representative predictions and instrument coverage before physical interpretation.
 
-The model is a research product. Predictions should be visually inspected and interpreted together with instrument coverage, background contamination, spacecraft location, magnetic-field measurements, and the physical context of each interval.
+## Architecture and input contract
 
-## Architecture
+Three encoder levels, a bottleneck, three transpose-convolution decoder levels, skip concatenations, and a 1×1 output convolution. Base width 12, subsequent widths 24/48/96. Each block contains two 3×3 convolutions, each followed by GroupNorm and ReLU. Parameter count: 272,787. The supplied architecture diagram omits GroupNorm and arranges input images for display rather than tensor order.
 
-U-Net v9 is a compact three-level two-dimensional U-Net with group normalization. It contains 273,124 trainable parameters. The base encoder width is 12 channels. The model accepts nine input channels and produces four pixel classes.
+Input tensor `[batch,6,time,32]`, in this exact order:
 
-## Input channels
+1. O2+ log10 DEF, clipped to [4,8] and scaled to [0,1].
+2. O+ log10 DEF, with the same scaling.
+3. log10(O+/O2+) where both species are valid, clipped to [-3,3] and scaled to [0,1]; zero elsewhere.
+4. O2+ validity, finite DEF >= 1e4.
+5. O+ validity, finite DEF >= 1e4.
+6. Absolute log10 energy coordinate, scaled between 0.2 eV and 30 keV and clipped to [0,1].
 
-1. Scaled log10 O2+ differential energy flux
-2. Scaled log10 H+ differential energy flux
-3. Scaled log10 O+ differential energy flux
-4. Scaled log10 H+/O2+ flux ratio
-5. Scaled log10 O+/O2+ flux ratio
-6. O2+ validity mask
-7. H+ validity mask
-8. O+ validity mask
-9. Absolute logarithmic energy coordinate from 0.2 eV to 30 keV
+Background correction is applied once to native STATIC C6 with the iv4 product, before summing O+ mass 14–20 and O2+ mass 24–40 and interpolating DEF against log10 energy onto the common 32-bin grid. No H+ input is used. D1 is not the input to this classifier.
 
-DEF values are clipped in log10 space from 4 to 8 and mapped to [0, 1]. Logarithmic ion ratios are clipped from -3 to 3 and mapped to [0, 1].
+Output tensor `[batch,3,time,32]`; labels 0 Noise, 1 Beam, 2 Low-energy ions. The raw API performs no postclassification screening. Training targets set former H+ contamination and invalid/subthreshold corrected O2+ pixels to Noise.
 
-## Output classes
+## Training and selection
 
-The output class order stored in the checkpoint is:
+234 inherited labeled events from 2015–2025, rebuilt with corrected C6. Date-grouped disjoint splits: 167 training, 32 validation, 35 test events. Seed 42. Five CPU epochs, AdamW learning rate 0.001, weight decay 0.0001, batch size 8. Weighted cross-entropy plus 0.5 times the mean physical-class soft Dice loss. Class weights are proportional to inverse square-root training pixel counts. Epoch 3 was selected by the validation macro F1 over Beam and Low-energy ions, and the held-out test set was evaluated after selection.
 
-0. H+ contamination
-1. O2+ Energetic beam
-2. Cold ions
-3. Other or uncertain
+Labels derive from earlier expert rules and model-assisted annotations, with one reviewed beam correction, rather than a wholly new independent manual labeling campaign. Date grouping differs from the earlier v9 event split. Metrics must not be compared directly across versions.
 
-## Training and evaluation
+## Held-out test metrics
 
-The labeled data set contains 234 complete events from 2015 through 2025. Complete events, rather than individual pixels or windows, were assigned to the training and test sets to reduce information leakage. The split seed is 42, with 187 training events and 47 test events.
+All pixels, before production postprocessing:
 
-The released checkpoint was selected at epoch 3 by the maximum test selection score. At that epoch:
+| Class | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: |
+| Noise | 0.9994 | 0.9966 | 0.9980 |
+| Beam | 0.8378 | 0.9757 | 0.9015 |
+| Low-energy ions | 0.9654 | 0.9911 | 0.9781 |
 
-| Metric | Value |
-| --- | ---: |
-| Test macro F1 | 0.9789 |
-| Test macro IoU | 0.9609 |
-| Test pixel accuracy | 0.9706 |
-| Test loss | 0.1755 |
+All-class macro F1: 0.959172; physical-class macro F1 (Beam and Low-energy ions): 0.939768; pixel accuracy: 0.996160. Accuracy restricted to visible O2+ pixels: 0.952043.
 
-These values describe performance on the labeled test events and should not be interpreted as an uncertainty estimate for the complete MAVEN archive.
+The large Noise fraction makes all-pixel accuracy insufficient on its own. Beam precision is about 83.8% relative to inherited labels, so false-positive signatures require inspection. These results are label-agreement estimates, not archive-wide uncertainty estimates.
 
-## Inference configuration
+## Inference and reproducibility
 
-Long observations are divided into 512-sample time windows with a stride of 51 samples. Softmax probabilities from overlapping windows are averaged before assigning the final class. The actual overlap fraction is 0.900390625.
+512-time × 32-energy windows, stride 256, 50% overlap. Short observations are zero-padded in normalized input space. Softmax probabilities are averaged across overlapping windows and cropped to original length before argmax. No confidence, connected-component, energy-range, or event-level filtering is included.
+
+The inference checkpoint contains weights plus public metadata, without optimizer states, training-case paths, or training history. Its source and release SHA-256 hashes are recorded in `weights/model_metadata.json`. The included full-day 2018-01-20 example is a training-date illustration with unedited v10 predictions, not an independent validation sample.
 
 ## Limitations
 
-Performance can degrade when the input grids, calibration, visibility masks, background correction, or DEF scaling differ from the training pipeline. The network may also confuse physical O2+ populations with proton contamination, incomplete field-of-view sampling, instrumental background, or plasma regimes underrepresented in the labeled data.
+Performance depends on correct background calibration, species extraction, alignment, and energy scaling. Out-of-distribution plasma populations, instrumental contamination, incomplete field of view, and weak reference labels can affect predictions. Training loss continued to fall after epoch 3 while validation loss increased. This release uses the selected checkpoint, not the final epoch. Existing v9 learning-curve figures do not describe this model.
