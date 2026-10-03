@@ -15,7 +15,6 @@
   ],
   "patch_time_samples": 512,
   "patch_stride": 256,
-  "selected_epoch": 3,
   "parameter_count": 272787,
   "background_correction": "STATIC C6 correct_bkg_c6 using iv4, once before species extraction",
   "source_checkpoint_sha256": "e960a14c70d1bdf921e9fede8966d57a5e9491a6d35da7c05499b33f9460896c",

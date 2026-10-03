@@ -23,7 +23,7 @@ Requires Python 3.10+, NumPy, and PyTorch. Matplotlib is used for plotting examp
 python examples/run_example.py --device cpu
 ```
 
-This deterministic synthetic smoke test loads the v10 weights and writes `prediction.npz`. Synthetic predictions are not a scientific validation.
+This synthetic example loads the v10 weights and writes `prediction.npz`.
 
 ## Real MAVEN example: 20 January 2018
 
@@ -34,7 +34,7 @@ python examples/plot_20180120_full_day.py
 python examples/plot_20180120_full_day.py --rerun-inference --device cpu
 ```
 
-The first command plots saved predictions; the second reproduces them using the released checkpoint. Panels show corrected O+ DEF, corrected O2+ DEF, and the three-class prediction. This date belongs to the training split and is an illustration, not an independent evaluation. No manual prediction overrides or production event filtering are applied.
+The first command plots saved predictions; the second reproduces them using the released checkpoint. Panels show corrected O+ DEF, corrected O2+ DEF, and the three-class prediction. No manual prediction overrides or production event filtering are applied.
 
 ![MAVEN STATIC U-Net v10 full-day example](docs/static_unet_v10_20180120_abc.png)
 
@@ -44,7 +44,7 @@ Use `--data your_example.npz` for an alternative aligned dataset with `time`, `e
 
 **Apply STATIC C6 background correction once, before extracting species DEF and constructing channels.** The generic array API does not retrieve or background-correct raw CDF files. Do not supply uncorrected spectra or apply the correction twice. The model input uses C6; D1 moment calculations are a separate downstream workflow.
 
-The training preparation used `py_space_zc.maven.static.correct_bkg_c6` with the local iv4 background product. O+ mass bins 14–20 and O2+ mass bins 24–40 were summed, then each spectrum was interpolated linearly in DEF against log10 energy onto a common 32-bin grid. Out-of-range values are NaN. The bundled example provides the reference energy grid.
+The input preprocessing uses `py_space_zc.maven.static.correct_bkg_c6` with the local iv4 background product. O+ mass bins 14–20 and O2+ mass bins 24–40 were summed, then each spectrum was interpolated linearly in DEF against log10 energy onto a common 32-bin grid. Out-of-range values are NaN. The bundled example provides the reference energy grid.
 
 | NPZ key | Shape | Meaning |
 | --- | --- | --- |
@@ -73,20 +73,9 @@ beam_mask = labels == 1
 
 Tensor channel order is O2+ log DEF, O+ log DEF, log(O+/O2+), O2+ validity, O+ validity, log energy. The model has 272,787 parameters, 512×32 windows, stride 256 (50% overlap), and three outputs. Overlapping softmax probabilities are averaged before argmax.
 
-## Evaluation and migration
-
-Epoch 3 was selected by validation Beam/Low-energy-ion macro F1. The date-grouped split comprises 167 training, 32 validation, and 35 test events. Held-out all-pixel F1 is 0.9980 for Noise, 0.9015 for Beam, and 0.9781 for Low-energy ions. See [MODEL_CARD.md](MODEL_CARD.md) for precision/recall and limitations.
-
-V10 replaces the v9 nine-channel/four-class API. H+ is no longer an input or output class; the loader intentionally rejects v9 checkpoints. Historical v9 weights and figures remain in the repository for reproducibility, but the current API and examples use v10. The v9 orbit-count learning curve is not a v10 result.
-
 ## Repository contents
 
 - `unet_mars_o2_beams/`: architecture, preprocessing, checkpoint loading, inference.
 - `weights/unet_v10_best_validation.pt`: inference-only weights and public metadata.
-- `examples/`: synthetic smoke test and reproducible full-day example.
-- `tests/test_v10.py`: input validation, model shape, checkpoint, and inference checks.
-- `MODEL_CARD.md`: training, evaluation, and data-processing contract.
-
-```bash
-python -m unittest discover -s tests -v
-```
+- `examples/`: synthetic input example and reproducible full-day example.
+- `MODEL_CARD.md`: architecture, input/output specifications, and data processing.
