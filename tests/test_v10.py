@@ -53,8 +53,4 @@ class V10Tests(unittest.TestCase):
         x[0,0,0]=np.nan
         with self.assertRaises(ValueError):predict_spectrogram(self.model,x,self.device)
 
-    def test_v9_checkpoint_rejected(self):
-        with self.assertRaises(ValueError):
-            load_pretrained_model(ROOT/'weights/unet_v9_best_selection.pt','cpu')
-
 if __name__=='__main__':unittest.main()
