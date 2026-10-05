@@ -45,4 +45,4 @@ The included 20 January 2018 example contains corrected spectra and reproducible
 
 The curated catalog contains 2,811,946 original v9 samples retained by final v11 screening, with valid MSE and background-corrected D1 moments. No new v11 points are added. Production screening includes H+/O2+ contamination and reviewed exclusions. Integration extends the v11 beam envelope by one native D1 bin at each end. This catalog is distinct from raw network output.
 
-See [MODEL_CARD.md](MODEL_CARD.md). Legacy v10 assets are retained for provenance and are not used by the v11 examples or API.
+See [MODEL_CARD.md](MODEL_CARD.md).
