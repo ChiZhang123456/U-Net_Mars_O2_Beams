@@ -1,4 +1,4 @@
-"""Public inference utilities for the MAVEN STATIC O2+ U-Net v10 model."""
+"""Public inference utilities for the MAVEN STATIC O2+ U-Net v11 model."""
 
 from .inference import load_pretrained_model, predict_spectrogram
 from .model import StaticUNet

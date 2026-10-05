@@ -1,4 +1,4 @@
-"""Checkpoint loading and overlap-averaged inference for U-Net v10."""
+"""Checkpoint loading and overlap-averaged inference for U-Net v11."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ def load_pretrained_model(
     checkpoint_path: str | Path,
     device: str | torch.device | None = None,
 ) -> tuple[StaticUNet, dict, torch.device]:
-    """Load the released v10 checkpoint and verify its public metadata."""
+    """Load the released v11 checkpoint and verify its public metadata."""
     selected_device = torch.device(
         device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
     )
@@ -30,10 +30,10 @@ def load_pretrained_model(
     stored_channels = tuple(checkpoint.get("input_channel_names", ()))
     if stored_channels != INPUT_CHANNEL_NAMES:
         raise ValueError(
-            "Checkpoint input channels do not match the released v10 preprocessing"
+            "Checkpoint input channels do not match the released v11 preprocessing"
         )
-    if checkpoint.get("version") != "v10" or tuple(checkpoint.get("class_names", ())) != CLASS_NAMES:
-        raise ValueError("Expected v10 checkpoint with Noise, Beam, Low-energy ions outputs")
+    if checkpoint.get("version") != "v11" or tuple(checkpoint.get("class_names", ())) != CLASS_NAMES:
+        raise ValueError("Expected v11 checkpoint with Noise, Beam, Low-energy ions outputs")
     model = StaticUNet(in_channels=len(stored_channels), classes=len(CLASS_NAMES))
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(selected_device).eval()
@@ -63,7 +63,7 @@ def predict_spectrogram(
     Parameters
     ----------
     inputs
-        Normalized array with shape ``[6, time, energy]``.
+        Normalized array with shape ``[3, time, energy]``.
 
     Returns
     -------
@@ -75,7 +75,7 @@ def predict_spectrogram(
     """
     values = np.asarray(inputs, dtype=np.float32)
     if values.ndim != 3 or values.shape[0] != len(INPUT_CHANNEL_NAMES):
-        raise ValueError(f"Expected [6, time, energy], got {values.shape}")
+        raise ValueError(f"Expected [3, time, energy], got {values.shape}")
     if window_size <= 0 or stride <= 0 or stride > window_size:
         raise ValueError("Require 0 < stride <= window_size")
 

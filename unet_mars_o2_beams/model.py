@@ -1,4 +1,4 @@
-"""Neural-network architecture used by U-Net v10.
+"""Neural-network architecture used by U-Net v11.
 
 The model treats an ion energy-time spectrogram as a two-dimensional image.
 The input layout is ``[batch, channel, time, energy]`` and the output layout
@@ -37,7 +37,7 @@ class StaticUNet(nn.Module):
     Parameters
     ----------
     in_channels
-        Number of physical input channels. U-Net v10 uses six channels.
+        Number of physical input channels. U-Net v11 uses three channels.
     classes
         Number of output classes. The released checkpoint uses three classes.
     base_channels
@@ -45,7 +45,7 @@ class StaticUNet(nn.Module):
     """
 
     def __init__(
-        self, in_channels: int = 6, classes: int = 3, base_channels: int = 12
+        self, in_channels: int = 3, classes: int = 3, base_channels: int = 12
     ) -> None:
         super().__init__()
         self.encoder_1 = ConvBlock(in_channels, base_channels)

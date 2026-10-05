@@ -1,10 +1,10 @@
-"""Run or display the U-Net v10 example for 20 January 2018.
+"""Run or display the U-Net v11 example for 20 January 2018.
 
 The input NPZ file contains aligned MAVEN STATIC background-corrected O+ and O2+
 differential energy flux (DEF) arrays for 00:00 to 24:00 UTC. By default,
-this script plots the v10 predictions stored in that file. Pass
-``--rerun-inference`` to reconstruct the six model inputs and run the
-released v10 checkpoint before plotting.
+this script plots the v11 predictions stored in that file. Pass
+``--rerun-inference`` to reconstruct the three model inputs and run the
+released v11 checkpoint before plotting.
 """
 
 from __future__ import annotations
@@ -33,8 +33,8 @@ from unet_mars_o2_beams import (  # noqa: E402
 )
 
 
-DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v10_best_validation.pt"
-DEFAULT_OUTPUT = ROOT / "docs" / "static_unet_v10_20180120_abc.png"
+DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v11_best_validation.pt"
+DEFAULT_OUTPUT = ROOT / "docs" / "static_unet_v11_20180120_abc.png"
 
 # Production labels use zero for noise or rejected pixels, followed by the
 # two accepted physical classes. These colors match the manuscript figure.
@@ -65,16 +65,15 @@ def load_example(path: Path) -> dict[str, np.ndarray]:
     if shape != (data["time"].size, data["energy_ev"].size):
         raise ValueError("Time or energy coordinates do not match the spectra")
     if not np.all(np.isin(data["labels"], [0, 1, 2])):
-        raise ValueError("Expected v10 labels: 0 Noise, 1 Beam, 2 Low-energy ions")
+        raise ValueError("Expected v11 labels: 0 Noise, 1 Beam, 2 Low-energy ions")
     return data
 
 
 def infer_labels(
     data: dict[str, np.ndarray], checkpoint: Path, device: str | None
 ) -> np.ndarray:
-    """Run v10 and return native class IDs."""
+    """Run v11 and return native class IDs."""
     inputs = build_input_channels(
-        o_def=data["o_def"],
         o2_def=data["o2_def"],
         energy_ev=data["energy_ev"],
     )
@@ -243,7 +242,7 @@ def make_figure(data, labels, regions, output: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--data", type=Path, default=ROOT / "examples/data/static_20180120_v10.npz",
+        "--data", type=Path, default=ROOT / "examples/data/static_20180120_v11.npz",
         help="Aligned 2018-01-20 STATIC spectra and label map in NPZ format",
     )
     parser.add_argument(
@@ -256,7 +255,7 @@ def main() -> None:
     parser.add_argument(
         "--rerun-inference",
         action="store_true",
-        help="Run the released checkpoint instead of using the saved v10 predictions",
+        help="Run the released checkpoint instead of using the saved v11 predictions",
     )
     args = parser.parse_args()
 

@@ -1,81 +1,48 @@
 # U-Net Mars O2 Energetic Beams
 
-PyTorch inference code and trained parameters for **U-Net v10**, which segments background-corrected MAVEN STATIC O+ and O2+ energy-time spectrograms into **Noise, Beam, and Low-energy ions**.
+Inference code and weights for **U-Net v11**, segmenting background-corrected MAVEN STATIC O2+ spectra into Noise, Beam, and Low-energy ions.
 
-![U-Net v10 architecture](docs/unet_v10_architecture.jpg)
+![Architecture](docs/unet_v11_architecture.png)
 
-The diagram summarizes the six inputs and three outputs. Its panel arrangement is illustrative, not the tensor channel order. Each convolution block also contains GroupNorm before ReLU; see the implementation and model card.
+Inputs: O2+ log DEF, O2+ validity, normalized log energy. The supplied diagram omits GroupNorm before ReLU.
 
-## Installation
+## Installation and inference
 
 ```bash
-git clone https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams.git
-cd U-Net_Mars_O2_Beams
 python -m pip install -r requirements.txt
 python -m pip install -e .
-```
-
-Requires Python 3.10+, NumPy, and PyTorch. Matplotlib is used for plotting examples. CPU and CUDA inference are supported.
-
-## Quick start
-
-```bash
 python examples/run_example.py --device cpu
+python examples/run_example.py --input your_corrected_spectra.npz --output prediction.npz
 ```
 
-This synthetic example loads the v10 weights and writes `prediction.npz`.
+Input NPZ requires `o2_def` with shape `[time,32]` and finite positive `energy_ev` with shape `[32]`. O+ data are not required.
 
-## Real MAVEN example: 20 January 2018
+Correct native STATIC C6 backgrounds once using iv4 before summing O2+ mass bins 24 to 40. Interpolate DEF linearly against log10 energy onto the common 32-bin grid. Out-of-range values are NaN. DEF units: keV cm^-2 s^-1 sr^-1 keV^-1. This array API does not read or calibrate raw CDF files. D1 moments are downstream calculations.
 
-A compact full-day array dataset is included, with background-corrected, aligned O+ and O2+ DEF and saved v10 predictions:
+```python
+from unet_mars_o2_beams import build_input_channels, load_pretrained_model, predict_spectrogram
+inputs = build_input_channels(o2_def=o2_def, energy_ev=energy_ev)
+model, metadata, device = load_pretrained_model("weights/unet_v11_best_validation.pt")
+probabilities, labels = predict_spectrogram(model, inputs, device)
+```
+
+272,463 parameters; 512 x 32 windows, stride 256. Overlapping softmax probabilities are averaged before argmax. Outputs: probabilities `[3,time,32]`, labels `[time,32]`, with 0 Noise, 1 Beam, 2 Low-energy ions. Raw inference does not apply production screening or interval merging.
+
+## Real MAVEN example
 
 ```bash
 python examples/plot_20180120_full_day.py
 python examples/plot_20180120_full_day.py --rerun-inference --device cpu
 ```
 
-The first command plots saved predictions; the second reproduces them using the released checkpoint. Panels show corrected O+ DEF, corrected O2+ DEF, and the three-class prediction. No manual prediction overrides or production event filtering are applied.
+The included 20 January 2018 example contains corrected spectra and reproducible raw v11 labels. Its O+ panel supplies context only; O+ is not used by the classifier.
 
-![MAVEN STATIC U-Net v10 full-day example](docs/static_unet_v10_20180120_abc.png)
+![Example](docs/static_unet_v11_20180120_abc.png)
 
-Use `--data your_example.npz` for an alternative aligned dataset with `time`, `energy_ev`, `o_def`, `o2_def`, and `labels` (v10 IDs 0/1/2). This plotting script fixes the displayed interval to 20 January 2018. Optional `--regions intervals.csv` accepts `region,start_utc,end_utc` with SW/MSH/MSP codes.
+## Beam intervals
 
-## Run on your spectra
+[Download 14,484 intervals](catalogs/beam_points_v11_intervals.txt). Three tab-separated columns without a header: sequential ID, start UTC, end UTC. Timestamps retain nanosecond precision. Adjacent retained samples separated by at most 10 minutes are merged. Endpoints are the first and last observed samples.
 
-**Apply STATIC C6 background correction once, before extracting species DEF and constructing channels.** The generic array API does not retrieve or background-correct raw CDF files. Do not supply uncorrected spectra or apply the correction twice. The model input uses C6; D1 moment calculations are a separate downstream workflow.
+The curated catalog contains 2,811,946 original v9 samples retained by final v11 screening, with valid MSE and background-corrected D1 moments. No new v11 points are added. Production screening includes H+/O2+ contamination and reviewed exclusions. Integration extends the v11 beam envelope by one native D1 bin at each end. This catalog is distinct from raw network output.
 
-The input preprocessing uses `py_space_zc.maven.static.correct_bkg_c6` with the local iv4 background product. O+ mass bins 14–20 and O2+ mass bins 24–40 were summed, then each spectrum was interpolated linearly in DEF against log10 energy onto a common 32-bin grid. Out-of-range values are NaN. The bundled example provides the reference energy grid.
-
-| NPZ key | Shape | Meaning |
-| --- | --- | --- |
-| `o_def` | `[time, 32]` | Background-corrected O+ DEF |
-| `o2_def` | `[time, 32]` | Background-corrected O2+ DEF |
-| `energy_ev` | `[32]` | Finite, positive common energy centers in eV |
-
-DEF uses keV cm^-2 s^-1 sr^-1 keV^-1. Arrays must share time and energy grids.
-
-```bash
-python examples/run_example.py --input your_corrected_spectra.npz --output prediction.npz
-```
-
-Output keys are `probabilities` (`[3,time,32]`), `labels` (`[time,32]`), `class_names`, and `energy_ev`. Labels are raw argmax predictions: **0 Noise, 1 Beam, 2 Low-energy ions**. The API does not apply confidence thresholds, connected-component rejection, or force invalid pixels to Noise after inference.
-
-## Python API
-
-```python
-from unet_mars_o2_beams import build_input_channels, load_pretrained_model, predict_spectrogram
-
-inputs = build_input_channels(o_def=o_def, o2_def=o2_def, energy_ev=energy_ev)
-model, metadata, device = load_pretrained_model("weights/unet_v10_best_validation.pt")
-probabilities, labels = predict_spectrogram(model, inputs, device)
-beam_mask = labels == 1
-```
-
-Tensor channel order is O2+ log DEF, O+ log DEF, log(O+/O2+), O2+ validity, O+ validity, log energy. The model has 272,787 parameters, 512×32 windows, stride 256 (50% overlap), and three outputs. Overlapping softmax probabilities are averaged before argmax.
-
-## Repository contents
-
-- `unet_mars_o2_beams/`: architecture, preprocessing, checkpoint loading, inference.
-- `weights/unet_v10_best_validation.pt`: inference-only weights and public metadata.
-- `examples/`: synthetic input example and reproducible full-day example.
-- `MODEL_CARD.md`: architecture, input/output specifications, and data processing.
+See [MODEL_CARD.md](MODEL_CARD.md). Legacy v10 assets are retained for provenance and are not used by the v11 examples or API.

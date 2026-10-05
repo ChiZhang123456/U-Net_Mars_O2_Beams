@@ -1,11 +1,8 @@
 {
-  "version": "v10",
+  "version": "v11",
   "input_channel_names": [
     "o2_log_def",
-    "o_log_def",
-    "o_to_o2_log_ratio",
     "o2_validity",
-    "o_validity",
     "log_energy"
   ],
   "class_names": [
@@ -15,8 +12,9 @@
   ],
   "patch_time_samples": 512,
   "patch_stride": 256,
-  "parameter_count": 272787,
+  "selected_epoch": 5,
+  "parameter_count": 272463,
   "background_correction": "STATIC C6 correct_bkg_c6 using iv4, once before species extraction",
-  "source_checkpoint_sha256": "e960a14c70d1bdf921e9fede8966d57a5e9491a6d35da7c05499b33f9460896c",
-  "checkpoint_sha256": "d320b7a51b4b8af6eb9a970609ce239908eb13a530b98a48a335ee901051f72a"
+  "source_checkpoint_sha256": "02488606e7ba724a6590e4a2c90fbe539fcd983d0e74f2597b62d9b478ef5230",
+  "checkpoint_sha256": "ab3ccbfd6e3f005cc02228dc7c92b2154a8a617b4752a6297e512a011a93ff9b"
 }
