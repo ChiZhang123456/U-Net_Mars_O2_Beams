@@ -46,3 +46,14 @@ The included 20 January 2018 example contains corrected spectra and reproducible
 The curated catalog contains 2,811,946 original v9 samples retained by final v11 screening, with valid MSE and background-corrected D1 moments. No new v11 points are added. Production screening includes H+/O2+ contamination and reviewed exclusions. Integration extends the v11 beam envelope by one native D1 bin at each end. This catalog is distinct from raw network output.
 
 See [MODEL_CARD.md](MODEL_CARD.md).
+
+## License and citation
+
+Source code and software configuration are licensed under MIT. Trained model
+files in `weights/` and the event catalog in `catalogs/` are licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Third-party observational
+data retain their original rights and attribution requirements. See [LICENSE](LICENSE).
+
+Please cite the Zenodo archival record for the release used. This repository
+contains the released interval catalog, model, and example described above; it
+does not include the full sample-level moment dataset or all figure source data.
