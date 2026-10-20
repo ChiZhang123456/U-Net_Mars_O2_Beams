@@ -6,6 +6,9 @@ authors:
     given-names: Chi
     affiliation: Boston University
 version: 11.0.0
+date-released: 2026-10-20
+doi: 10.5281/zenodo.23512278
+url: "https://zenodo.org/records/23512278"
 repository-code: "https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams"
 license:
   - MIT
