@@ -1,0 +1,18 @@
+{
+  "model": "v12_count2",
+  "checkpoint_sha256": "600d281dd09d0c38d954d36149f8cb2ed5e4e66df048265110fae2cb38f0ee3f",
+  "inference_stride": 51,
+  "window": 512,
+  "classes": [
+    "Noise",
+    "Beam",
+    "Low-energy ions"
+  ],
+  "source": "STATIC C6 L2 and same-day iv4, 2018-01-20",
+  "display_rule": "Invalid count-mask pixels displayed as Noise; raw_labels preserved separately",
+  "counts": [
+    660688,
+    8116,
+    22396
+  ]
+}

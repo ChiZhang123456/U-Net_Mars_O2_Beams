@@ -8,7 +8,7 @@ Input `[batch,3,time,32]`:
 2. O2+ validity: finite corrected DEF strictly greater than the simultaneous positive, finite central-mass-channel 2-count DEF response. Equality is invalid. This channel is independent of the 1e4 DEF scaling floor.
 3. Log10 energy normalized between 0.2 eV and 30 keV, clipped to [0,1].
 
-Apply C6 iv4 background correction once before summing O2+ mass bins 24 to 40 and interpolating onto the common energy grid. No O+ or H+ input is required. D1 is not classifier input.
+Apply C6 iv4 background correction once before summing O2+ mass bins 24 to 40 and interpolating onto the common energy grid. No O+ or H+ input is required.
 
 Output `[batch,3,time,32]`: 0 Noise, 1 Beam, 2 Low-energy ions. 512-time windows, inference stride 51; short input zero-padding; overlapping probability averaging before argmax. Raw API does not apply production screening. Split at outages; production uses a 60-second maximum gap and separate UTC days.
 

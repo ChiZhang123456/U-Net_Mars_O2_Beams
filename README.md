@@ -15,7 +15,7 @@ python examples/run_example.py --input your_corrected_spectra.npz --output predi
 
 Input NPZ requires `o2_def` with shape `[time,32]` and finite positive `energy_ev` with shape `[32]`. Also supply `two_count_def` with shape `[time,32]`, or binary `o2_validity` computed using the count rule below. Missing count information raises an error. O+ data are not required.
 
-Correct native STATIC C6 backgrounds once using iv4 before summing O2+ mass bins 24 to 40. Interpolate DEF linearly against log10 energy onto the common 32-bin grid. Out-of-range values are NaN. DEF units: keV cm^-2 s^-1 sr^-1 keV^-1. This array API does not read or calibrate raw CDF files. D1 moments are downstream calculations.
+Correct native STATIC C6 backgrounds once using iv4 before summing O2+ mass bins 24 to 40. Interpolate DEF linearly against log10 energy onto the common 32-bin grid. Out-of-range values are NaN. DEF units: keV cm^-2 s^-1 sr^-1 keV^-1. This array API does not read or calibrate raw CDF files.
 
 ```python
 from unet_mars_o2_beams import build_input_channels, load_pretrained_model, predict_spectrogram
@@ -33,6 +33,16 @@ Validity is `isfinite(o2_def) & isfinite(two_count_def) & (two_count_def > 0) & 
 Compute the simultaneous central O2 mass-channel response at native energy as `2 * dead / (time_integ * geom_factor * gf * eff)`. Use the mass channel nearest 32 amu, the correct sweep/attenuator/efficiency indices, and time-aligned iv4 calibration. Interpolate the response linearly against log10 energy onto the same grid as corrected DEF; out-of-range values are NaN. This is a calibrated count-equivalent threshold, not a comparison of the summed species DEF against the number 2. The array API consumes the calibrated threshold or mask and does not read raw CDFs.
 
 Training preserves inherited physical classes only where this mask is true and assigns other reference pixels to Noise. Raw network outputs remain unconstrained predictions. The architecture is unchanged. The synthetic smoke example uses an illustrative constant threshold and is not instrument calibration.
+
+## Full-day C6 example
+
+The supplied [20 January 2018 example](examples/C6_EXAMPLE.md) includes background-corrected C6 DEF, raw and background-subtracted counts, calibrated two-count DEF thresholds, current-model predictions, and a reproducible H+/O2+/classification figure. H+ is context only; classification uses O2+.
+
+![Full-day C6 identification](docs/static_c6_20180120_example.png)
+
+```bash
+python examples/plot_c6_full_day.py
+```
 
 ## Model figures
 
