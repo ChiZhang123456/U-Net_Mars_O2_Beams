@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Please cite this repository and the model version used."
+message: "Please cite the published Zenodo record for this software version."
 title: "U-Net Mars O2+ Beams: inference code and trained model"
 authors:
   - family-names: Zhang
@@ -7,7 +7,8 @@ authors:
     affiliation: Boston University
 version: 12.0.0
 date-released: 2026-11-26
-url: "https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams"
+doi: 10.5281/zenodo.24572312
+url: "https://zenodo.org/records/24572312"
 repository-code: "https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams"
 license:
   - MIT

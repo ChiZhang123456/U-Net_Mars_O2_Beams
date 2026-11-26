@@ -1,5 +1,7 @@
 # U-Net Mars O2 Energetic Beams
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24572312.svg)](https://doi.org/10.5281/zenodo.24572312)
+
 Inference code and weights for **U-Net v12 count2**, segmenting background-corrected MAVEN STATIC O2+ spectra into Noise, Beam, and Low-energy ions.
 
 Inputs: O2+ log DEF, O2+ validity, normalized log energy.
@@ -68,3 +70,7 @@ See [MODEL_CARD.md](MODEL_CARD.md). The training stride recorded in the source c
 ## License and citation
 
 Source code and software configuration are licensed under MIT. Trained model files in `weights/` are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [LICENSE](LICENSE) and [CITATION.cff](CITATION.cff).
+
+Version 12.0.0 is archived at [Zenodo](https://zenodo.org/records/24572312). Please cite:
+
+Zhang, C. (2026). *U-Net Mars O2+ Beams: inference code and trained model* (Version 12.0.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.24572312
