@@ -10,15 +10,71 @@ This example uses MAVEN STATIC C6 observations on **20 January 2018 (UTC)**. It 
 - [Plot and inference script](plot_c6_full_day.py).
 - [Optional raw-CDF export script](export_c6_example.py).
 
-From the repository root:
+## Installation from a fresh download
+
+Use **Python 3.10 or later** with a PyTorch wheel available for your platform. Python 3.11 is the tested version. This example runs on CPU; CUDA, Conda, raw CDF files and personal helper libraries are not required. Internet access is needed to download the repository and install dependencies; inference runs offline afterward.
+
+### 1. Download the complete repository
 
 ```bash
+git clone https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams.git
+cd U-Net_Mars_O2_Beams
+```
+
+Alternatively, choose **Code → Download ZIP** on GitHub, extract the ZIP, and open a terminal inside the extracted repository folder (the folder containing `requirements.txt`). Do not download only the example script: the included data, weights, CSV and package folder must remain together. Git LFS is not needed.
+
+### 2. Create and activate an isolated environment
+
+Windows PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell does not permit activation, use `.\.venv\Scripts\python.exe` instead of `python` in every command below. Activation is optional; no execution-policy change is needed.
+
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+On Linux, install your distribution's Python venv support if `python3 -m venv` reports that it is missing.
+
+### 3. Install the required packages
+
+```bash
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip install matplotlib
+```
+
+`requirements.txt` includes NumPy, PyTorch and Matplotlib. The C6 example uses Python's standard-library CSV reader and does not require pandas, SpacePy or `py_space_zc`. No editable package installation or `PYTHONPATH` setting is needed: the example resolves the bundled package, data and checkpoint relative to its own file.
+
+### 4. Run the full-day example
+
+```bash
 python examples/plot_c6_full_day.py
 ```
 
-The included NPZ is sufficient to run the example; raw CDF access and SpacePy are not needed for inference or plotting.
+The script runs the released model on CPU and writes these files under the downloaded repository's `docs/` folder:
+
+- `static_c6_20180120_example.png`
+- `static_c6_20180120_example.pdf`
+- `static_c6_20180120_predictions.npz`
+- `static_c6_20180120_method.json`
+
+Existing files with these names are overwritten when the example is rerun. Completion prints the model version (`v12_count2`), inference stride (`51`), checkpoint hash and class counts. The output probabilities have shape `[3,21600,32]`. No GUI window is required, because plotting uses the noninteractive Agg backend. Runtime depends on CPU speed. The supplied NPZ contains the observations and counts; inference only loads the small arrays it needs, not the full native cubes.
+
+### Troubleshooting
+
+- `ModuleNotFoundError`: install requirements with the same environment's Python that runs the script. `python -m pip --version` shows which environment pip is using.
+- Missing data or weights: extract/download the complete repository and keep its directory structure intact.
+- Font warnings: the figure requests Arial. Install Arial if you need identical typography; on systems without Arial, Matplotlib uses an available fallback font. This does not affect inference.
+- PyTorch installation failure: use a Python version supported by PyTorch on your platform (3.11 was tested), then repeat the installation step.
+
+The included NPZ is sufficient to run the example; raw CDF access and SpacePy are only needed for the optional export described below.
 
 ## Input data dictionary
 
@@ -84,3 +140,10 @@ The export script is C6-specific. It does not download files. The included full 
 ## Validation and limits
 
 The export was checked against the existing calibrated-response implementation at 51 records distributed over the day, covering both corrected O2+ DEF and two-count thresholds. Native cube shapes, timestamp ordering, output probability sums and count-mask display consistency were checked. The example is an illustration, not an independent human-labeled test set. Calibration, species overlap, incomplete instrument coverage and inherited training labels limit scientific interpretation. Original observational-data rights and attribution requirements remain applicable.
+
+
+### Clean-environment execution check
+
+On 26 November 2026, the complete tracked repository was exported to a separate directory and run in a new Python 3.11.14 virtual environment with `include-system-site-packages = false`. Only `requirements.txt` was installed. The resolved main packages were NumPy 2.4.6, PyTorch 2.15.0+cpu and Matplotlib 3.11.2. `py_space_zc`, SpacePy and pandas were absent.
+
+The C6 script completed from a working directory outside the repository using Python isolated mode (`-I`), with no editable install or custom `PYTHONPATH`. It regenerated all four output files. Probability normalization, argmax labels and validity-mask application passed validation; displayed labels exactly matched the bundled example, with class counts `[660688, 8116, 22396]`. `python -m pip check` reported no broken requirements. This execution check was performed on Windows; macOS/Linux instructions above have not been execution-tested in this check.

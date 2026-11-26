@@ -9,7 +9,6 @@ from pathlib import Path
 import os,json
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'docs'
-os.environ.setdefault('SPACEPY',str(OUT/'runtime'))
 os.environ.setdefault('MPLBACKEND','Agg')
 import numpy as np
 import pandas as pd

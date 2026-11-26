@@ -36,7 +36,7 @@ Training preserves inherited physical classes only where this mask is true and a
 
 ## Full-day C6 example
 
-The supplied [20 January 2018 example](examples/C6_EXAMPLE.md) includes background-corrected C6 DEF, raw and background-subtracted counts, calibrated two-count DEF thresholds, current-model predictions, and a reproducible H+/O2+/classification figure. H+ is context only; classification uses O2+.
+The supplied [20 January 2018 example and complete installation guide](examples/C6_EXAMPLE.md) includes background-corrected C6 DEF, raw and background-subtracted counts, calibrated two-count DEF thresholds, current-model predictions, and a reproducible H+/O2+/classification figure. H+ is context only; classification uses O2+.
 
 ![Full-day C6 identification](docs/static_c6_20180120_example.png)
 
