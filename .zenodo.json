@@ -11,7 +11,7 @@
   "access_right": "open",
   "license": "mit",
   "language": "eng",
-  "description": "<p>U-Net v12 count2 inference code and trained weights for MAVEN STATIC O2+ spectra. Inputs use strict two-count-equivalent validity. Default inference uses 512 x 32 windows and stride 51; source training stride is 256. Includes a synthetic example and model documentation. Source code is MIT licensed and trained weights are CC BY 4.0 licensed.</p>",
+  "description": "<p>U-Net v12 count2 inference software and trained weights for identification of energetic O2+ beams and low-energy ions in MAVEN STATIC C6 spectra. Three inputs are normalized O2+ log DEF, a strict two-count-equivalent validity mask, and normalized log energy. Inference uses 512 x 32 windows, stride 51, and mean overlapping softmax probabilities before argmax. The source training stride is 256.</p><p>This version includes the background-corrected 20 January 2018 C6 example with native raw counts, background-subtracted counts, corrected DEF, calibrated two-count thresholds, reproducible current-model predictions and figures, and complete standalone installation instructions. It also includes updated input and architecture figures. The full-day example was verified in a clean Python environment without personal helper libraries.</p><p>Source code and software configuration are MIT licensed. Trained model files in weights/ are CC BY 4.0 licensed. Observational data retain their original rights and attribution requirements. See LICENSE for scope.</p>",
   "keywords": [
     "Mars",
     "MAVEN",
