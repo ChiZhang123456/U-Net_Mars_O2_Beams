@@ -1,4 +1,4 @@
-"""Neural-network architecture used by U-Net v11.
+"""Neural-network architecture used by U-Net v12 count2.
 
 The model treats an ion energy-time spectrogram as a two-dimensional image.
 The input layout is ``[batch, channel, time, energy]`` and the output layout
@@ -37,7 +37,7 @@ class StaticUNet(nn.Module):
     Parameters
     ----------
     in_channels
-        Number of physical input channels. U-Net v11 uses three channels.
+        Number of physical input channels. U-Net v12 count2 uses three channels.
     classes
         Number of output classes. The released checkpoint uses three classes.
     base_channels

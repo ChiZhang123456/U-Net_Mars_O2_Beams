@@ -1,12 +1,30 @@
 {
-  "title": "U-Net Mars O2+ Beams: inference code, trained model, and beam interval catalog",
-  "creators": [{"name": "Zhang, Chi", "affiliation": "Boston University"}],
-  "version": "11.0.0",
+  "title": "U-Net Mars O2+ Beams: inference code and trained model",
+  "creators": [
+    {
+      "name": "Zhang, Chi",
+      "affiliation": "Boston University"
+    }
+  ],
+  "version": "12.0.0",
   "upload_type": "software",
   "access_right": "open",
   "license": "mit",
   "language": "eng",
-  "description": "<p>U-Net v11 inference software, trained model weights, and a curated catalog of 14,484 energetic O2+ beam intervals identified in MAVEN STATIC observations. This release supports the manuscript Deep-Learning Identification and Global Characterization of Energetic O2+ Beams at Mars (JGR: Planets, submission 2026JE010251).</p><p>The repository includes a reproducible 20 January 2018 example, preprocessing and inference documentation, and a model card. The interval catalog lists UTC start and end times and differs from raw network output. It does not contain the full sample-level moment dataset or all figure source data.</p><p>Licensing: source code and software configuration are MIT licensed. Trained model files in weights/ and the event catalog in catalogs/ are licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Third-party observational data retain their original rights. See LICENSE for scope.</p>",
-  "keywords": ["Mars", "MAVEN", "STATIC", "O2+", "energetic ion beams", "deep learning", "U-Net"],
-  "related_identifiers": [{"identifier": "https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams", "relation": "isSupplementTo"}]
+  "description": "<p>U-Net v12 count2 inference code and trained weights for MAVEN STATIC O2+ spectra. Inputs use strict two-count-equivalent validity. Default inference uses 512 x 32 windows and stride 51; source training stride is 256. Includes a synthetic example and model documentation. Source code is MIT licensed and trained weights are CC BY 4.0 licensed.</p>",
+  "keywords": [
+    "Mars",
+    "MAVEN",
+    "STATIC",
+    "O2+",
+    "energetic ion beams",
+    "deep learning",
+    "U-Net"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ChiZhang123456/U-Net_Mars_O2_Beams",
+      "relation": "isSupplementTo"
+    }
+  ]
 }

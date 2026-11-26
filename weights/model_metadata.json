@@ -1,7 +1,6 @@
 {
   "version": "v12_count2",
   "patch_time_samples": 512,
-  "patch_stride": 256,
   "selected_epoch": 5,
   "parameter_count": 272463,
   "mask_rule": "Corrected O2 DEF > 2-count response, otherwise Noise; strict inequality",
@@ -17,5 +16,7 @@
   ],
   "background_correction": "STATIC C6 iv4 background correction once before species extraction",
   "source_checkpoint_sha256": "cc2377c955b957fedebf0abbc6d1bf7c32d3e6acf6498881f0aa1d68b933ce5f",
-  "checkpoint_sha256": "db13c6af4da236bf4cd871ac72d50c1582ebe8a9fff071a0cb7105bea4c1dd8f"
+  "training_patch_stride": 256,
+  "inference_stride": 51,
+  "checkpoint_sha256": "600d281dd09d0c38d954d36149f8cb2ed5e4e66df048265110fae2cb38f0ee3f"
 }

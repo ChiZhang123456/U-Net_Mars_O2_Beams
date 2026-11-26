@@ -1,4 +1,4 @@
-"""Checkpoint loading and overlap-averaged inference for U-Net v12 count2 (or archived v11)."""
+"""Checkpoint loading and overlap-averaged inference for U-Net v12 count2."""
 
 from __future__ import annotations
 
@@ -13,14 +13,14 @@ from .preprocessing import INPUT_CHANNEL_NAMES
 
 CLASS_NAMES = ("Noise", "Beam", "Low-energy ions")
 DEFAULT_WINDOW_SIZE = 512
-DEFAULT_STRIDE = 256
+DEFAULT_STRIDE = 51
 
 
 def load_pretrained_model(
     checkpoint_path: str | Path,
     device: str | torch.device | None = None,
 ) -> tuple[StaticUNet, dict, torch.device]:
-    """Load the released v12 count2 (or archived v11) checkpoint and verify its public metadata."""
+    """Load the released v12 count2 checkpoint and verify its public metadata."""
     selected_device = torch.device(
         device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
     )
@@ -30,10 +30,10 @@ def load_pretrained_model(
     stored_channels = tuple(checkpoint.get("input_channel_names", ()))
     if stored_channels != INPUT_CHANNEL_NAMES:
         raise ValueError(
-            "Checkpoint input channels do not match the released v12 count2 (or archived v11) preprocessing"
+            "Checkpoint input channels do not match the released v12 count2 preprocessing"
         )
-    if checkpoint.get("version") not in ("v12_count2", "v11") or tuple(checkpoint.get("class_names", ())) != CLASS_NAMES:
-        raise ValueError("Expected v12 count2 (or archived v11) checkpoint with Noise, Beam, Low-energy ions outputs")
+    if checkpoint.get("version") != "v12_count2" or tuple(checkpoint.get("class_names", ())) != CLASS_NAMES:
+        raise ValueError("Expected v12 count2 checkpoint with Noise, Beam, Low-energy ions outputs")
     model = StaticUNet(in_channels=len(stored_channels), classes=len(CLASS_NAMES))
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(selected_device).eval()

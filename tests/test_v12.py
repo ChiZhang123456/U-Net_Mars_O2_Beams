@@ -29,3 +29,12 @@ class CountMaskTests(unittest.TestCase):
         probabilities, labels = predict_spectrogram(model, x, device)
         self.assertEqual(labels.shape, flux.shape)
         np.testing.assert_allclose(probabilities.sum(0), 1, atol=1e-6)
+
+    def test_inference_stride(self):
+        import inspect
+        from unet_mars_o2_beams.inference import _window_starts
+        self.assertEqual(inspect.signature(predict_spectrogram).parameters['stride'].default, 51)
+        self.assertEqual(_window_starts(700, 512, 51), [0, 51, 102, 153, 188])
+        metadata = __import__('json').loads((ROOT / 'weights/model_metadata.json').read_text())
+        self.assertEqual(metadata['inference_stride'], 51)
+        self.assertEqual(metadata['training_patch_stride'], 256)

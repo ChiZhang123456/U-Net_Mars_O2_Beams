@@ -2,13 +2,12 @@ Licensing scope
 ===============
 
 The source code and software configuration in this repository are licensed under
-the MIT License below. The trained model files in weights/ and the event catalog
-in catalogs/ are excluded from the MIT License and are licensed under Creative
+the MIT License below. The trained model files in weights/ are excluded from the MIT License and are licensed under Creative
 Commons Attribution 4.0 International (CC BY 4.0):
 https://creativecommons.org/licenses/by/4.0/
 
-For attribution of the model and catalog, cite Chi Zhang and the Zenodo archival
-record for the version used. Third-party observational data retain their original
+For attribution of the model, cite Chi Zhang and this repository with the model
+version used. Third-party observational data retain their original
 rights and attribution requirements; this notice does not relicense those data.
 
 MIT License (source code and software configuration)
