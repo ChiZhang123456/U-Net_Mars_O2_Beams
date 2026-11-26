@@ -1,4 +1,4 @@
-"""Convert aligned MAVEN STATIC background-corrected O2+ spectra into v11 inputs."""
+"""Convert aligned MAVEN STATIC background-corrected O2+ spectra into v12 count2 inputs."""
 
 from __future__ import annotations
 
@@ -37,13 +37,17 @@ def build_input_channels(
     o2_def: np.ndarray,
     energy_ev: np.ndarray,
     o2_validity: np.ndarray | None = None,
+    *,
+    two_count_def: np.ndarray | None = None,
 ) -> np.ndarray:
-    """Build the three normalized input channels expected by U-Net v11.
+    """Build the three normalized input channels expected by U-Net v12 count2.
 
     The background-corrected O2+ DEF array must be aligned and have shape ``[time, energy]``.
     ``energy_ev`` is a one-dimensional array containing the energy-bin centers.
-    Optional validity arrays use one for visible/valid pixels and zero otherwise.
-    Pixels below 1e4 DEF or containing non-finite values are always marked invalid.
+    Supply an aligned two-count DEF response, or a precomputed binary count mask.
+    Validity requires finite corrected DEF strictly greater than the positive,
+    finite two-count response. Equality is invalid. The mask is independent of
+    log-DEF clipping; values below 1e4 may still have validity one.
     """
     o2_def = _validate_spectrum("o2_def", o2_def)
 
@@ -54,21 +58,26 @@ def build_input_channels(
         raise ValueError("energy_ev must contain finite positive values")
 
     if o2_def.shape[1] != 32:
-        raise ValueError("The released v11 model requires 32 energy bins")
+        raise ValueError("The released v12 count2 model requires 32 energy bins")
 
-    o2_scaled, o2_from_def = scale_log_def(o2_def)
+    o2_scaled, _ = scale_log_def(o2_def)
 
-    def combine_validity(provided: np.ndarray | None, inferred: np.ndarray) -> np.ndarray:
-        if provided is None:
-            return inferred
-        supplied = np.asarray(provided, dtype=np.float32)
-        if supplied.shape != inferred.shape:
+    if two_count_def is None and o2_validity is None:
+        raise ValueError("Supply two_count_def or an explicitly computed count-based o2_validity mask")
+    o2_valid = np.isfinite(o2_def)
+    if two_count_def is not None:
+        threshold = np.asarray(two_count_def, dtype=np.float32)
+        if threshold.shape != o2_def.shape:
+            raise ValueError("two_count_def must match the spectral shape")
+        o2_valid &= np.isfinite(threshold) & (threshold > 0) & (o2_def > threshold)
+    if o2_validity is not None:
+        supplied = np.asarray(o2_validity)
+        if supplied.shape != o2_def.shape:
             raise ValueError("A validity array does not match the spectral shape")
         if not np.all(np.isfinite(supplied)) or not np.all((supplied == 0) | (supplied == 1)):
             raise ValueError("Validity masks must contain only finite zeros and ones")
-        return np.minimum(supplied, inferred)
-
-    o2_valid = combine_validity(o2_validity, o2_from_def)
+        o2_valid &= supplied.astype(bool)
+    o2_valid = o2_valid.astype(np.float32)
 
     log_energy = np.log10(energy_ev)
     energy_coordinate = np.clip(

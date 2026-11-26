@@ -1,5 +1,10 @@
 {
-  "version": "v11",
+  "version": "v12_count2",
+  "patch_time_samples": 512,
+  "patch_stride": 256,
+  "selected_epoch": 5,
+  "parameter_count": 272463,
+  "mask_rule": "Corrected O2 DEF > 2-count response, otherwise Noise; strict inequality",
   "input_channel_names": [
     "o2_log_def",
     "o2_validity",
@@ -10,11 +15,7 @@
     "Beam",
     "Low-energy ions"
   ],
-  "patch_time_samples": 512,
-  "patch_stride": 256,
-  "selected_epoch": 5,
-  "parameter_count": 272463,
-  "background_correction": "STATIC C6 correct_bkg_c6 using iv4, once before species extraction",
-  "source_checkpoint_sha256": "02488606e7ba724a6590e4a2c90fbe539fcd983d0e74f2597b62d9b478ef5230",
-  "checkpoint_sha256": "ab3ccbfd6e3f005cc02228dc7c92b2154a8a617b4752a6297e512a011a93ff9b"
+  "background_correction": "STATIC C6 iv4 background correction once before species extraction",
+  "source_checkpoint_sha256": "cc2377c955b957fedebf0abbc6d1bf7c32d3e6acf6498881f0aa1d68b933ce5f",
+  "checkpoint_sha256": "db13c6af4da236bf4cd871ac72d50c1582ebe8a9fff071a0cb7105bea4c1dd8f"
 }

@@ -8,14 +8,14 @@ class V11Tests(unittest.TestCase):
  def test_preprocessing_and_regression(self):
   torch.set_num_threads(2)
   e=np.geomspace(.2,3e4,32);f=np.full((19,32),1e5,dtype=np.float32);f[0,0]=np.nan
-  x=build_input_channels(o2_def=f,energy_ev=e)
+  x=build_input_channels(o2_def=f,energy_ev=e,o2_validity=np.isfinite(f)&(f>=1e4))
   self.assertEqual(x.shape,(3,19,32));self.assertEqual(x[1,0,0],0)
   np.testing.assert_allclose(x[0,1],.25);np.testing.assert_allclose(x[2,0,[0,-1]],[0,1],atol=1e-7)
   with self.assertRaises(ValueError):build_input_channels(f,e,o2_validity=np.full_like(f,np.nan))
   model,meta,device=load_pretrained_model(ROOT/'weights/unet_v11_best_validation.pt','cpu')
   self.assertEqual(sum(p.numel() for p in model.parameters()),272463)
   with np.load(ROOT/'examples/data/static_20180120_v11.npz') as d:
-   x=build_input_channels(o2_def=d['o2_def'],energy_ev=d['energy_ev'])
+   x=build_input_channels(o2_def=d['o2_def'],energy_ev=d['energy_ev'],o2_validity=np.isfinite(d['o2_def'])&(d['o2_def']>=1e4))
    p,y=predict_spectrogram(model,x,device)
    np.testing.assert_array_equal(y,d['labels']);np.testing.assert_allclose(p.sum(0),1,atol=1e-6)
   with self.assertRaises(ValueError):predict_spectrogram(model,x[:2],device)

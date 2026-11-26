@@ -1,4 +1,4 @@
-"""Run U-Net v11 on an NPZ file or on a deterministic synthetic example."""
+"""Run U-Net v12_count2 on an NPZ file or on a deterministic synthetic example."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from unet_mars_o2_beams import (
 from unet_mars_o2_beams.inference import CLASS_NAMES
 
 
-DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v11_best_validation.pt"
+DEFAULT_CHECKPOINT = ROOT / "weights" / "unet_v12_count2_best_validation.pt"
 
 
 def synthetic_spectra() -> dict[str, np.ndarray]:
@@ -32,6 +32,7 @@ def synthetic_spectra() -> dict[str, np.ndarray]:
     return {
         "o2_def": 10.0 ** rng.uniform(4.0, 7.0, shape),
         "energy_ev": energy_ev,
+        "two_count_def": np.full(shape, 2.0e4, dtype=np.float32),
     }
 
 
@@ -43,7 +44,11 @@ def load_spectra(path: Path | None) -> dict[str, np.ndarray]:
         missing = [name for name in required if name not in source]
         if missing:
             raise KeyError(f"Input NPZ is missing: {missing}")
-        return {name: source[name] for name in required}
+        result = {name: source[name] for name in required}
+        for name in ("two_count_def", "o2_validity"):
+            if name in source:
+                result[name] = source[name]
+        return result
 
 
 def main() -> None:

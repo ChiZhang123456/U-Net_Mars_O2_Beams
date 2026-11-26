@@ -76,8 +76,11 @@ def infer_labels(
     inputs = build_input_channels(
         o2_def=data["o2_def"],
         energy_ev=data["energy_ev"],
+        o2_validity=np.isfinite(data["o2_def"]) & (data["o2_def"] >= 1e4),
     )
-    model, _, selected_device = load_pretrained_model(checkpoint, device)
+    model, metadata, selected_device = load_pretrained_model(checkpoint, device)
+    if metadata["version"] != "v11":
+        raise ValueError("This historical example requires v11; v12 needs count-calibrated inputs")
     _, raw_labels = predict_spectrogram(model, inputs, selected_device)
 
     labels = raw_labels
