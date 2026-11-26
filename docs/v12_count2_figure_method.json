@@ -1,0 +1,15 @@
+{
+  "model_version": "v12_count2",
+  "checkpoint_sha256": "600d281dd09d0c38d954d36149f8cb2ed5e4e66df048265110fae2cb38f0ee3f",
+  "window": 512,
+  "stride": 51,
+  "window_starts_one_based": [
+    1,
+    52,
+    103
+  ],
+  "architecture_probability_panel": "Direct softmax of first 512-sample window",
+  "full_interval_output": "Mean overlapping window probabilities before argmax",
+  "input_display": "Physical DEF and energy; normalized internally",
+  "validity": "Finite corrected DEF strictly greater than finite positive two-count response"
+}

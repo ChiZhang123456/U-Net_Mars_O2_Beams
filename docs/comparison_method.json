@@ -1,0 +1,11 @@
+{
+  "model_version": "v12_count2",
+  "window": 512,
+  "inference_stride": 51,
+  "selected_cache_index_zero_based": 299,
+  "selected_sample_index_one_based": 300,
+  "native_validity_rule": "Valid if finite observed DEF > simultaneous two-count DEF response; same rule as panel b, evaluated on native energies in panel d",
+  "native_valid_points": 8,
+  "native_invalid_positive_points": 2,
+  "log_plot_note": "Zero and negative observed DEF omitted from logarithmic scatter; CSV retains zero values and validity flags"
+}

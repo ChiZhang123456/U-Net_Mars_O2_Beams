@@ -34,9 +34,26 @@ Compute the simultaneous central O2 mass-channel response at native energy as `2
 
 Training preserves inherited physical classes only where this mask is true and assigns other reference pixels to Noise. Raw network outputs remain unconstrained predictions. The architecture is unchanged. The synthetic smoke example uses an illustrative constant threshold and is not instrument calibration.
 
+## Model figures
+
+![Current model inputs](docs/v12_count2_inputs.png)
+
+![Current network architecture](docs/unet_v12_count2_architecture.png)
+
+[Input figure PDF](docs/v12_count2_inputs.pdf) ¡¤ [Architecture PDF](docs/unet_v12_count2_architecture.pdf)
+
+Reproduce the figures with Python (requires matplotlib and pandas in addition to the inference dependencies):
+
+```bash
+python examples/plot_v12_inputs.py
+python examples/plot_v12_architecture.py
+```
+
+Both figures use the supplied 5 August 2018 corrected STATIC spectra and the count-based validity rule. Physical DEF and energy are shown for interpretation; the model receives normalized channels. The architecture output panels show softmax probabilities for the first 512-sample window. The saved full-interval output averages probabilities across windows starting at samples 1, 52, and 103, then applies argmax. GroupNorm is included after each 3 ¡Á 3 convolution. Source data and calibration snapshot are in `examples/data/`; output provenance is in `docs/v12_count2_figure_method.json`.
+
 ## Model and provenance
 
-See [MODEL_CARD.md](MODEL_CARD.md). The training stride recorded in the source checkpoint is 256; the default inference stride is 51. This repository contains the latest model and a synthetic inference example.
+See [MODEL_CARD.md](MODEL_CARD.md). The training stride recorded in the source checkpoint is 256; the default inference stride is 51. This repository contains the latest model, real-data figure examples, and a synthetic inference example.
 
 ## License and citation
 
